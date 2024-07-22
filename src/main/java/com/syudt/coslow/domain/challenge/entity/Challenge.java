@@ -1,8 +1,10 @@
 package com.syudt.coslow.domain.challenge.entity;
+
 import com.syudt.coslow.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "challenge")
@@ -17,9 +19,18 @@ public class Challenge {
     @Column(name = "challenge_id")
     private Integer challengeId;
 
-    @ManyToOne
-    @JoinColumn(name = "participants_id")
-    private Member participants;
+    @ManyToMany
+    @JoinTable(
+            name = "challenge_participants",
+            joinColumns = @JoinColumn(name = "challenge_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private Set<Member> participantsId;
+
+    @ElementCollection
+    @CollectionTable(name = "challenge_tags", joinColumns = @JoinColumn(name = "challenge_id"))
+    @Column(name = "tag")
+    private Set<String> tags;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -51,4 +62,6 @@ public class Challenge {
 
     @Column(name = "lastModifiedDate", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime lastModifiedDate;
+
 }
+

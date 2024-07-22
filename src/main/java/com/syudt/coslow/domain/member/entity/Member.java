@@ -4,6 +4,7 @@ import com.syudt.coslow.domain.diet.entity.Diet;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 
 @Entity
@@ -19,19 +20,24 @@ public class Member {
     @Column(name = "user_id")
     private Integer userId;
 
-    @ManyToOne
-    @JoinColumn(name = "challenge_id")
-    private Challenge challenge;
+    @ManyToMany
+    @JoinTable(
+            name = "challenge_participants",
+            joinColumns = @JoinColumn(name = "member_id"),
+            inverseJoinColumns = @JoinColumn(name = "challenge_id")
+    )
+    private Set<Challenge> challenges;
 
     @ManyToOne
     @JoinColumn(name = "diet_id")
     private Diet diet;
 
+    @Column(name = "user_email", nullable = false, unique = true)
+    private String userEmail;
+
     @Column(name = "user_pwd", nullable = false)
     private String userPwd;
 
-    @Column(name = "user_email", nullable = false, unique = true)
-    private String userEmail;
 
     @Column(name = "nickname", nullable = false)
     private String nickname;
