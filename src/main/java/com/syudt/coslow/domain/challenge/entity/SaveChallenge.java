@@ -14,8 +14,8 @@ public class SaveChallenge {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "savechallenge_id")
-    private int savechallengeId;
+    @Column(name = "save_challenge_id")
+    private int saveChallengeId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

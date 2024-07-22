@@ -16,8 +16,8 @@ public class SaveDiet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "savediet_id")
-    private int savedietId;
+    @Column(name = "save_diet_id")
+    private int saveDietId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

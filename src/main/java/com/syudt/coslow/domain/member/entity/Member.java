@@ -1,11 +1,12 @@
 package com.syudt.coslow.domain.member.entity;
+
 import com.syudt.coslow.domain.challenge.entity.Challenge;
 import com.syudt.coslow.domain.diet.entity.Diet;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.Set;
-
 
 @Entity
 @Getter
@@ -20,14 +21,6 @@ public class Member {
     @Column(name = "user_id")
     private Integer userId;
 
-    @ManyToMany
-    @JoinTable(
-            name = "challenge_participants",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "challenge_id")
-    )
-    private Set<Challenge> challenges;
-
     @ManyToOne
     @JoinColumn(name = "diet_id")
     private Diet diet;
@@ -37,7 +30,6 @@ public class Member {
 
     @Column(name = "user_pwd", nullable = false)
     private String userPwd;
-
 
     @Column(name = "nickname", nullable = false)
     private String nickname;
@@ -59,4 +51,8 @@ public class Member {
 
     @Column(name = "lastModifiedDate", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime lastModifiedDate;
+
+    @ManyToMany(mappedBy = "participants")
+    private Set<Challenge> challenges;
+
 }

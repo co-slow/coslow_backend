@@ -3,6 +3,7 @@ package com.syudt.coslow.domain.challenge.entity;
 import com.syudt.coslow.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class Challenge {
             joinColumns = @JoinColumn(name = "challenge_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<Member> participantsId;
+    private Set<Member> participants;
 
     @ElementCollection
     @CollectionTable(name = "challenge_tags", joinColumns = @JoinColumn(name = "challenge_id"))
@@ -64,4 +65,3 @@ public class Challenge {
     private LocalDateTime lastModifiedDate;
 
 }
-
