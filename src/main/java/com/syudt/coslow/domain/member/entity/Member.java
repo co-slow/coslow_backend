@@ -23,7 +23,7 @@ public class Member {
     @ManyToMany
     @JoinTable(
             name = "challenge_participants",
-            joinColumns = @JoinColumn(name = "member_id"),
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "challenge_id")
     )
     private Set<Challenge> challenges;

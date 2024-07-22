@@ -23,7 +23,7 @@ public class Challenge {
     @JoinTable(
             name = "challenge_participants",
             joinColumns = @JoinColumn(name = "challenge_id"),
-            inverseJoinColumns = @JoinColumn(name = "member_id")
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<Member> participantsId;
 

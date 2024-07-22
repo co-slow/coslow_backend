@@ -19,7 +19,7 @@ public class Diet {
     private Integer dietId;
 
     @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private Member member;
 
     @Column(name = "diet_title", nullable = false)
