@@ -1,2 +1,5 @@
 
 src/main/resources/application.yml
+.idea/misc.xml
+build
+.gradle
