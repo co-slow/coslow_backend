@@ -55,4 +55,13 @@ public class Member {
     @ManyToMany(mappedBy = "participants")
     private Set<Challenge> challenges;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_role", nullable = false)
+    private UserRole userRole;
+
+    public enum UserRole {
+        ADMIN,
+        PTN,
+        USER;
+    }
 }
