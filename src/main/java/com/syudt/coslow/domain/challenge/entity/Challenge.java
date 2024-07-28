@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-
 @Entity
 @Table(name = "challenge")
 @Getter
@@ -15,6 +14,7 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode
 public class Challenge {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "challenge_id")
@@ -45,18 +45,22 @@ public class Challenge {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
-    @Column(name = "participate_frequency", nullable = false, columnDefinition = "ENUM('1 week', '2 weeks', '1 month', 'Custom')")
-    private String participateFrequency;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "participate_frequency", nullable = false, columnDefinition = "ENUM('ONE_WEEK', 'TWO_WEEKS', 'ONE_MONTH', 'CUSTOM')")
+    private ParticipateFrequency participateFrequency;
 
     @Column(name = "max_participants", nullable = false)
     private Integer maxParticipants;
 
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('Recruiting', 'Proceeding', 'Completed')")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, columnDefinition = "ENUM('RECRUITING', 'PROCEEDING', 'COMPLETED')")
+    private ChallengeStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by", nullable = false)
-    private Member createdBy;
+    @Column(name = "created_by", nullable = false)
+    private String createdBy;
+
+    @Column(name = "board_id", nullable = false)
+    private Integer boardId;
 
     @Column(name = "createDate", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createDate;
@@ -64,4 +68,51 @@ public class Challenge {
     @Column(name = "lastModifiedDate", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime lastModifiedDate;
 
+    @PrePersist
+    @PreUpdate
+    public void updateStatus() {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isBefore(startDate)) {
+            status = ChallengeStatus.RECRUITING;  // 모집중
+        } else if (now.isAfter(endDate)) {
+            status = ChallengeStatus.COMPLETED;  // 종료
+        } else {
+            status = ChallengeStatus.PROCEEDING;  // 진행중
+        }
+    }
+
+    public enum ParticipateFrequency {
+        ONE_WEEK("ONE_WEEK"),
+        TWO_WEEKS("TWO_WEEKS"),
+        ONE_MONTH("ONE_MONTH"),
+        CUSTOM("CUSTOM");
+
+        private final String value;
+
+        ParticipateFrequency(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+    }
+
+    public enum ChallengeStatus {
+        RECRUITING("RECRUITING"),
+        PROCEEDING("PROCEEDING"),
+        COMPLETED("COMPLETED");
+
+        private final String value;
+
+        ChallengeStatus(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+    }
 }
