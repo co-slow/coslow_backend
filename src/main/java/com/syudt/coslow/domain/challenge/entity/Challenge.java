@@ -52,10 +52,12 @@ public class Challenge {
     @Column(name = "participate_frequency", nullable = false, columnDefinition = "ENUM('ONE_WEEK', 'TWO_WEEKS', 'ONE_MONTH', 'CUSTOM')")
     private ParticipateFrequency participateFrequency;
 
-    // nn명까지 가능
     @Column(name = "max_participants", nullable = false)
     @Max(99)
     private Integer maxParticipants;
+
+    @Column(name = "weekly_check_in_count", nullable = false)
+    private Integer weeklyCheckInCount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "ENUM('RECRUITING', 'PROCEEDING', 'COMPLETED')")

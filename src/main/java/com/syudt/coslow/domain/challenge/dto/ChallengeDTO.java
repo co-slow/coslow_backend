@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
+
 @Getter
 @Setter
 @ToString
@@ -12,22 +13,24 @@ import java.util.Set;
 public class ChallengeDTO {
     private String title;
     private String description;
-    private String startDate;
-    private String endDate; // (CUSTOM일 경우만 사용)
+    private String startDate; // YYYY.MM.DD 형식
+    private String endDate; // YYYY.MM.DD 형식 (CUSTOM일 경우만 사용)
     private Challenge.ParticipateFrequency participateFrequency;
     private Integer maxParticipants;
+    private Integer weeklyCheckInCount;
     private Set<String> tags;
     private String createdBy;
-    private String daysRemaining; //D-n일 나타날 때 사용
+    private String daysRemaining; //D-n일
     private Challenge.ChallengeStatus status;
 
-    public ChallengeDTO(String title, String description, String startDate, String endDate, Challenge.ParticipateFrequency participateFrequency, Integer maxParticipants, Set<String> tags, String createdBy, String daysRemaining, Challenge.ChallengeStatus status) {
+    public ChallengeDTO(String title, String description, String startDate, String endDate, Challenge.ParticipateFrequency participateFrequency, Integer maxParticipants, Integer weeklyCheckInCount, Set<String> tags, String createdBy, String daysRemaining, Challenge.ChallengeStatus status) {
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.participateFrequency = participateFrequency;
         this.maxParticipants = maxParticipants;
+        this.weeklyCheckInCount = weeklyCheckInCount;
         this.tags = tags;
         this.createdBy = createdBy;
         this.daysRemaining = daysRemaining;
@@ -43,6 +46,7 @@ public class ChallengeDTO {
         dto.setEndDate(challenge.getEndDate().format(formatter));
         dto.setParticipateFrequency(challenge.getParticipateFrequency());
         dto.setMaxParticipants(challenge.getMaxParticipants());
+        dto.setWeeklyCheckInCount(challenge.getWeeklyCheckInCount());
         dto.setTags(challenge.getTags());
         dto.setCreatedBy(challenge.getCreatedBy());
         dto.setDaysRemaining(challenge.getDaysRemaining());
@@ -50,3 +54,4 @@ public class ChallengeDTO {
         return dto;
     }
 }
+

@@ -25,7 +25,7 @@ public class ChallengeService {
     private MemberRepository memberRepository;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-//참여자 최대 nn명 까지 가능
+    //참여자 최대 nn명 까지 가능
     public Challenge createChallenge(ChallengeDTO challengeDTO) {
         if (challengeDTO.getMaxParticipants() > 99) {
             throw new IllegalArgumentException("참여자는 최대 99명까지 가능합니다.");
@@ -37,9 +37,8 @@ public class ChallengeService {
 
         LocalDate startDate = LocalDate.parse(challengeDTO.getStartDate(), DATE_FORMATTER);
         challenge.setStartDate(startDate.atStartOfDay());
-
-    // YYYY.MM.DD형식으로 시작일 지정 후 지정한 기간에 따라 종료 기간 설정
-    // CUSTOM은 시작일, 종료일 따로 설정
+        // YYYY.MM.DD형식으로 시작일 지정 후 지정한 기간에 따라 종료 기간 설정
+        // CUSTOM은 시작일, 종료일 따로 설정
         switch (challengeDTO.getParticipateFrequency()) {
             case ONE_WEEK:
                 challenge.setEndDate(startDate.plusWeeks(1).atTime(LocalTime.MAX));
@@ -58,12 +57,12 @@ public class ChallengeService {
 
         challenge.setParticipateFrequency(challengeDTO.getParticipateFrequency());
         challenge.setMaxParticipants(challengeDTO.getMaxParticipants());
+        challenge.setWeeklyCheckInCount(challengeDTO.getWeeklyCheckInCount());
         challenge.setTags(challengeDTO.getTags());
 
         Member member = memberRepository.findById(Integer.parseInt(challengeDTO.getCreatedBy()))
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
         challenge.setCreatedBy(member.getNickname());
-
         // user_role로 게시판 ID 결정
         int boardId;
         switch (member.getUserRole()) {
@@ -95,21 +94,21 @@ public class ChallengeService {
                 .map(ChallengeDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-    //마감순
+
     public List<ChallengeDTO> getChallengesEndingSoon() {
         List<Challenge> challenges = challengeRepository.findChallengesDeadline(LocalDateTime.now());
         return challenges.stream()
                 .map(ChallengeDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-    //인기순
+
     public List<ChallengeDTO> getPopularChallenges() {
         List<Challenge> challenges = challengeRepository.findAllByOrderByParticipantsDesc();
         return challenges.stream()
                 .map(ChallengeDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-    //최신순
+
     public List<ChallengeDTO> getNewestChallenges() {
         List<Challenge> challenges = challengeRepository.findAllByOrderByCreateDateDesc();
         return challenges.stream()
