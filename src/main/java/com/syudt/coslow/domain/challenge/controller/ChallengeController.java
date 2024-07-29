@@ -1,5 +1,9 @@
 package com.syudt.coslow.domain.challenge.controller;
 
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.syudt.coslow.domain.challenge.dto.ChallengeDTO;
 import com.syudt.coslow.domain.challenge.dto.SaveChallengeDTO;
 import com.syudt.coslow.domain.challenge.entity.Challenge;
@@ -44,5 +48,6 @@ public class ChallengeController {
     public ResponseEntity<SaveChallenge> saveChallenge(@RequestBody SaveChallengeDTO saveChallengeDTO) {
         SaveChallenge savedChallenge = saveChallengeService.saveChallenge(saveChallengeDTO);
         return ResponseEntity.ok(savedChallenge);
+
     }
 }

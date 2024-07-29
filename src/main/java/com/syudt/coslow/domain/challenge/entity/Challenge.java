@@ -19,7 +19,7 @@ public class Challenge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "challenge_id")
     private Integer challengeId;
-
+    
     @ManyToMany
     @JoinTable(
             name = "challenge_participants",
