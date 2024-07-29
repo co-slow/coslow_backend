@@ -2,10 +2,13 @@ package com.syudt.coslow.domain.challenge.entity;
 
 import com.syudt.coslow.domain.member.entity.Member;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+
+
 @Entity
 @Table(name = "challenge")
 @Getter
@@ -19,7 +22,7 @@ public class Challenge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "challenge_id")
     private Integer challengeId;
-    
+
     @ManyToMany
     @JoinTable(
             name = "challenge_participants",
@@ -49,7 +52,9 @@ public class Challenge {
     @Column(name = "participate_frequency", nullable = false, columnDefinition = "ENUM('ONE_WEEK', 'TWO_WEEKS', 'ONE_MONTH', 'CUSTOM')")
     private ParticipateFrequency participateFrequency;
 
+    // nn명까지 가능
     @Column(name = "max_participants", nullable = false)
+    @Max(99)
     private Integer maxParticipants;
 
     @Enumerated(EnumType.STRING)
@@ -68,6 +73,9 @@ public class Challenge {
     @Column(name = "lastModifiedDate", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime lastModifiedDate;
 
+    @Transient
+    private String daysRemaining;
+
     @PrePersist
     @PreUpdate
     public void updateStatus() {
@@ -78,6 +86,19 @@ public class Challenge {
             status = ChallengeStatus.COMPLETED;  // 종료
         } else {
             status = ChallengeStatus.PROCEEDING;  // 진행중
+        }
+        updateDaysRemaining();
+    }
+
+    private void updateDaysRemaining() {
+        LocalDateTime now = LocalDateTime.now();
+        long daysBetween = java.time.Duration.between(now, endDate).toDays();
+        if (daysBetween > 0) {
+            daysRemaining = "D-" + daysBetween;
+        } else if (daysBetween == 0) {
+            daysRemaining = "D-DAY";
+        } else {
+            daysRemaining = "종료";
         }
     }
 
