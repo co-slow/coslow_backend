@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/coslow
-    username: coslow
-    password: 1111
+    url: jdbc:mysql://coslow-db.czsgsukyi1y2.ap-northeast-2.rds.amazonaws.com/coslow
+    username: admin
+    password: sungjun1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -19,3 +19,8 @@ spring:
 logging:
   level:
     root: INFO
+
+kakao:
+  app_key: 5815a4975b35540b74e2ebbd27ed6902
+  redirect_url: http://localhost:8080/oauth2/code/kakao
+
