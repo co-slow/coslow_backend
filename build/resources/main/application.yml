@@ -18,9 +18,13 @@ spring:
 
 logging:
   level:
+<<<<<<< HEAD
     root: INFO
 
 kakao:
   app_key: 5815a4975b35540b74e2ebbd27ed6902
   redirect_url: http://localhost:8080/oauth2/code/kakao
 
+=======
+    root: INFO
+>>>>>>> a43e08d65ecf7b51de8404f2af92c3c2ef8ddeb4
