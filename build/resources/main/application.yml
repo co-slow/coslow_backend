@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/coslow
-    username: coslow
-    password: 1111
+    url: jdbc:mysql://coslow-db.czsgsukyi1y2.ap-northeast-2.rds.amazonaws.com/coslow
+    username: admin
+    password: sungjun1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
