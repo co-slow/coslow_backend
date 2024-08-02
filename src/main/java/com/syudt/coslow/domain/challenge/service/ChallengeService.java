@@ -115,4 +115,5 @@ public class ChallengeService {
                 .map(ChallengeDTO::fromEntity)
                 .collect(Collectors.toList());
     }
+
 }
