@@ -1,5 +1,6 @@
 package com.syudt.coslow.domain.challenge.service;
 
+import com.syudt.coslow.domain.challenge.dto.ChallengeDTO;
 import com.syudt.coslow.domain.challenge.entity.ApplyChallenge;
 import com.syudt.coslow.domain.challenge.entity.Challenge;
 import com.syudt.coslow.domain.challenge.repository.ApplyChallengeRepository;
@@ -10,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 @Service
 public class ApplyChallengeService {
 
@@ -23,7 +25,8 @@ public class ApplyChallengeService {
 
     @Autowired
     private MemberRepository memberRepository;
-//예외
+
+    // 챌린지 신청
     public String applyToChallenge(int challengeId, int userId) {
         Optional<Challenge> challengeOptional = challengeRepository.findById(challengeId);
         if (challengeOptional.isEmpty()) {
@@ -36,17 +39,16 @@ public class ApplyChallengeService {
             return "사용자를 찾을 수 없습니다.";
         }
         Member member = memberOptional.get();
-// 종료된 챌린지 일 때
+
         if (challenge.getStatus() == Challenge.ChallengeStatus.COMPLETED) {
             return "이미 종료된 챌린지입니다.";
         }
 
-        // 챌린지 최대 참가 인원수 초과시
         long currentParticipants = applyChallengeRepository.countByChallenge(challenge);
         if (currentParticipants >= challenge.getMaxParticipants()) {
             return "챌린지의 최대 참가 인원이 초과되었습니다.";
         }
-// 이미 신청한 챌린지 재 신청 했을 때
+
         if (applyChallengeRepository.existsByChallengeAndMember(challenge, member)) {
             return "이미 신청한 챌린지입니다.";
         }
@@ -55,7 +57,7 @@ public class ApplyChallengeService {
         applyChallenge.setChallenge(challenge);
         applyChallenge.setMember(member);
         applyChallenge.setApplyDate(LocalDateTime.now());
-//모집중인 챌린지 신청했을 때
+
         if (challenge.getStartDate().isAfter(LocalDateTime.now())) {
             applyChallenge.setStatus(ApplyChallenge.Status.PENDING);
             applyChallengeRepository.save(applyChallenge);
@@ -68,10 +70,44 @@ public class ApplyChallengeService {
         }
     }
 
+    // 사용자가 신청한 챌린지 목록 조회
+    public List<ChallengeDTO> getChallengesForUser(int userId) {
+        Optional<Member> memberOptional = memberRepository.findById(userId);
+        if (memberOptional.isEmpty()) {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+        Member member = memberOptional.get();
 
+        List<ApplyChallenge> applications = applyChallengeRepository.findByMember(member);
+        return applications.stream()
+                .map(applyChallenge -> ChallengeDTO.fromEntity(applyChallenge.getChallenge()))
+                .collect(Collectors.toList());
+    }
+
+    // 특정 챌린지의 참가자 수 조회
     public int getParticipantsCount(int challengeId) {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new IllegalArgumentException("챌린지를 찾을 수 없습니다."));
         return (int) applyChallengeRepository.countByChallenge(challenge);
+    }
+
+    // 사용자가 특정 게시판의 챌린지 상태별로 조회
+    public List<ChallengeDTO> getChallengesForUserByBoardAndStatus(int userId, int boardId, Challenge.ChallengeStatus status) {
+        System.out.println("UserID: " + userId + ", BoardID: " + boardId + ", Status: " + status);
+
+        Optional<Member> memberOptional = memberRepository.findById(userId);
+        if (memberOptional.isEmpty()) {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+        Member member = memberOptional.get();
+
+        List<ApplyChallenge> applications = applyChallengeRepository.findByMember(member);
+        System.out.println("Applications: " + applications);
+
+        return applications.stream()
+                .map(applyChallenge -> applyChallenge.getChallenge())
+                .filter(challenge -> challenge.getBoardId() == boardId && challenge.getStatus() == status)
+                .map(challenge -> ChallengeDTO.fromEntity(challenge))
+                .collect(Collectors.toList());
     }
 }

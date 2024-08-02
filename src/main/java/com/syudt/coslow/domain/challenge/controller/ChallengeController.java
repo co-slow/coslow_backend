@@ -1,5 +1,6 @@
 package com.syudt.coslow.domain.challenge.controller;
 
+import com.syudt.coslow.domain.challenge.dto.ChallengeApplyDTO;
 import com.syudt.coslow.domain.challenge.dto.ChallengeDTO;
 import com.syudt.coslow.domain.challenge.entity.ApplyChallenge;
 import com.syudt.coslow.domain.challenge.entity.Challenge;
@@ -16,10 +17,10 @@ import java.util.List;
 public class ChallengeController {
 
     @Autowired
-    private ChallengeService challengeService;
+    private ApplyChallengeService applyChallengeService;
 
     @Autowired
-    private ApplyChallengeService applyChallengeService;
+    private ChallengeService challengeService;
 
     // 새로운 챌린지 생성
     @PostMapping
@@ -59,7 +60,7 @@ public class ChallengeController {
         List<ChallengeDTO> challenges = challengeService.getNewestChallenges();
         return ResponseEntity.ok(challenges);
     }
-//    http://localhost:8080/challenges/1/apply?userId=3
+
     // 챌린지 신청
     @PostMapping("/{challengeId}/apply")
     public ResponseEntity<String> applyToChallenge(@PathVariable int challengeId, @RequestParam int userId) {
@@ -70,11 +71,29 @@ public class ChallengeController {
             return ResponseEntity.status(400).body(response);
         }
     }
-//    http://localhost:8080/challenges/1/applicants/count
+
+
     // 참여 인원 수 조회
+
     @GetMapping("/{challengeId}/participants/count")
     public ResponseEntity<Integer> getParticipantsCount(@PathVariable int challengeId) {
         int count = applyChallengeService.getParticipantsCount(challengeId);
         return ResponseEntity.ok(count);
+    }
+
+    // 사용자가 참여한 챌린지 조회 (게시판 및 상태별)
+    //http://localhost:8080/challenges/user/1/board/3/status/RECRUITING
+    @GetMapping("/user/{userId}/board/{boardId}/status/{status}")
+    public ResponseEntity<List<ChallengeDTO>> getUserChallengesByBoardAndStatus(
+            @PathVariable int userId,
+            @PathVariable int boardId,
+            @PathVariable Challenge.ChallengeStatus status) {
+        try {
+            List<ChallengeDTO> challenges = applyChallengeService.getChallengesForUserByBoardAndStatus(userId, boardId, status);
+            return ResponseEntity.ok(challenges);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(null);
         }
+    }
 }
+
