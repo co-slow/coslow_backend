@@ -15,6 +15,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+
 @Service
 @Transactional
 public class AuthService {
@@ -70,5 +72,29 @@ public class AuthService {
                 .get("nickname").asText();
 
         return new KakaoUserInfo(id, profileImg, nickname, token);
+    }
+    public boolean isTokenValid(String token) throws IOException {
+        String url = "https://kapi.kakao.com/v1/user/access_token_info";
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+        int responseCode = response.getStatusCodeValue();
+
+        if (responseCode != 200) {
+            return false;
+        }
+
+        String responseBody = response.getBody();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(responseBody);
+
+        long expiresIn = jsonNode.get("expires_in").asLong();
+        return expiresIn > 0;
     }
 }
