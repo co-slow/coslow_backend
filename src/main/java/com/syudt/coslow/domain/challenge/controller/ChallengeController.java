@@ -1,14 +1,11 @@
 package com.syudt.coslow.domain.challenge.controller;
 
 import com.syudt.coslow.auth.service.AuthService;
-import com.syudt.coslow.domain.challenge.dto.ChallengeApplyDTO;
 import com.syudt.coslow.domain.challenge.dto.ChallengeDTO;
-import com.syudt.coslow.domain.challenge.entity.ApplyChallenge;
 import com.syudt.coslow.domain.challenge.entity.Challenge;
 import com.syudt.coslow.domain.challenge.service.ApplyChallengeService;
 import com.syudt.coslow.domain.challenge.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -88,12 +85,12 @@ public class ChallengeController {
     // 사용자가 참여한 챌린지 조회 (게시판 및 상태별)
     //http://localhost:8080/challenges/user/1/board/3/status/RECRUITING
     @GetMapping("/user/{boardId}")
-    public ResponseEntity<List<ChallengeDTO>> getUserChallengesByBoardAndStatus(@PathVariable("boardId") Integer boardId, RequestEntity request) throws IOException {
+    public ResponseEntity<List<?>> getUserChallengesByBoardAndStatus(@PathVariable("boardId") Integer boardId, RequestEntity request) throws IOException {
         String accessToken = request.getHeaders().get("Authorization").toString().split(" ")[1].split("]")[0];
         String oauthId = authService.isTokenValid(accessToken);
 
         try {
-            List<ChallengeDTO> challenges = applyChallengeService.getChallengesForUserByBoard(oauthId, boardId);
+            List<?> challenges = applyChallengeService.getChallengesForUserByBoard(oauthId, boardId);
             return ResponseEntity.ok(challenges);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).body(null);

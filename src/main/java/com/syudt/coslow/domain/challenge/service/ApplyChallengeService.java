@@ -92,7 +92,7 @@ public class ApplyChallengeService {
     }
 
     // 사용자가 특정 게시판의 챌린지 상태별로 조회
-    public List<ChallengeDTO> getChallengesForUserByBoard(String oauthId, Integer boardId) {
+    public List<? extends Object> getChallengesForUserByBoard(String oauthId, Integer boardId) {
         System.out.println("UserID: " + oauthId+ ", BoardID: " + boardId);
 
         Member memberOptional = memberRepository.findByOauthId(oauthId).orElseThrow();
@@ -100,10 +100,16 @@ public class ApplyChallengeService {
         List<ApplyChallenge> applications = applyChallengeRepository.findByMember(memberOptional);
         System.out.println("Applications: " + applications);
 
-        return applications.stream()
-                .map(applyChallenge -> applyChallenge.getChallenge())
-                .filter(challenge -> challenge.getBoardId() == boardId)
-                .map(challenge -> ChallengeDTO.fromEntity(challenge))
-                .collect(Collectors.toList());
+        if (boardId == 4) {
+            return challengeRepository.findByCreatedBy(memberOptional.getNickname());
+        } else {
+            return applications.stream()
+                    .map(applyChallenge -> applyChallenge.getChallenge())
+                    .filter(challenge -> challenge.getBoardId() == boardId)
+                    .map(challenge -> ChallengeDTO.fromEntity(challenge))
+                    .collect(Collectors.toList());    
+        }
+
+        
     }
 }

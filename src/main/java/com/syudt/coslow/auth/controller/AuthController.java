@@ -6,6 +6,7 @@ import com.syudt.coslow.auth.service.AuthService;
 import com.syudt.coslow.domain.member.dto.MemberSave;
 import com.syudt.coslow.domain.member.entity.UserRole;
 import com.syudt.coslow.domain.member.service.MemberService;
+import com.syudt.coslow.global.util.S3Util;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.RequestEntity;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.io.IOException;
 
@@ -25,6 +27,7 @@ import java.io.IOException;
 public class AuthController {
     private final AuthService authService;
     private final MemberService memberService;
+    private final S3Util s3Util;
 
     @GetMapping("hello")
     public String hello () {
@@ -65,5 +68,11 @@ public class AuthController {
         } else {
             return ResponseEntity.status(403).build();
         }
+    }
+
+    @GetMapping("/img-upload")
+    public ResponseEntity getPresignedUrlForUpload() {
+        String presignedUrl = s3Util.generatePresignedUrlForUpload("random-grid");
+        return ResponseEntity.ok().body(presignedUrl);
     }
 }
