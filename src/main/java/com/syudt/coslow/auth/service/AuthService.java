@@ -73,7 +73,7 @@ public class AuthService {
 
         return new KakaoUserInfo(id, profileImg, nickname, token);
     }
-    public boolean isTokenValid(String token) throws IOException {
+    public String isTokenValid(String token) throws IOException {
         String url = "https://kapi.kakao.com/v1/user/access_token_info";
         RestTemplate restTemplate = new RestTemplate();
 
@@ -87,14 +87,40 @@ public class AuthService {
         int responseCode = response.getStatusCodeValue();
 
         if (responseCode != 200) {
-            return false;
+            throw new IOException();
         }
 
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
 
-        long expiresIn = jsonNode.get("expires_in").asLong();
-        return expiresIn > 0;
+        Long expiresIn = jsonNode.get("expires_in").asLong();
+        String oauthId = String.valueOf(jsonNode.get("id").asLong());
+
+        return oauthId;
+    }
+
+    public Boolean kakaoLogoutViaToken(String accessToken) throws IOException {
+        String url = "https://kapi.kakao.com/v1/user/logout";
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+//        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("target_id_type", "user_id");
+        body.add("target_id", Long.parseLong(isTokenValid(accessToken)));
+
+        HttpEntity<?> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        int responseCode = response.getStatusCodeValue();
+
+        if (responseCode == 200) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

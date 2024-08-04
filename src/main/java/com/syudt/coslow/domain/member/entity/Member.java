@@ -14,6 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
+@Builder
+@AllArgsConstructor
 @Table(name = "user")
 public class Member {
     @Id
@@ -21,15 +23,12 @@ public class Member {
     @Column(name = "user_id")
     private Integer userId;
 
+    @Column(name = "oauth_id")
+    private String oauthId;
+
     @ManyToOne
     @JoinColumn(name = "diet_id")
     private Diet diet;
-
-    @Column(name = "user_email", nullable = false, unique = true)
-    private String userEmail;
-
-    @Column(name = "user_pwd", nullable = false)
-    private String userPwd;
 
     @Column(name = "nickname", nullable = false)
     private String nickname;
@@ -59,9 +58,4 @@ public class Member {
     @Column(name = "user_role", nullable = false)
     private UserRole userRole;
 
-    public enum UserRole {
-        ADMIN,
-        PTN,
-        USER;
-    }
 }

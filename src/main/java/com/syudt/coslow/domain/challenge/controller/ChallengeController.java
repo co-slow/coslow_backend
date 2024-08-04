@@ -1,25 +1,27 @@
 package com.syudt.coslow.domain.challenge.controller;
 
+import com.syudt.coslow.auth.service.AuthService;
 import com.syudt.coslow.domain.challenge.dto.ChallengeDTO;
-import com.syudt.coslow.domain.challenge.entity.ApplyChallenge;
 import com.syudt.coslow.domain.challenge.entity.Challenge;
 import com.syudt.coslow.domain.challenge.service.ApplyChallengeService;
 import com.syudt.coslow.domain.challenge.service.ChallengeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/challenges")
+@RequiredArgsConstructor
 public class ChallengeController {
+    private final AuthService authService;
 
-    @Autowired
-    private ChallengeService challengeService;
+    private final ApplyChallengeService applyChallengeService;
 
-    @Autowired
-    private ApplyChallengeService applyChallengeService;
+    private final ChallengeService challengeService;
 
     // 새로운 챌린지 생성
     @PostMapping
@@ -59,7 +61,7 @@ public class ChallengeController {
         List<ChallengeDTO> challenges = challengeService.getNewestChallenges();
         return ResponseEntity.ok(challenges);
     }
-//    http://localhost:8080/challenges/1/apply?userId=3
+
     // 챌린지 신청
     @PostMapping("/{challengeId}/apply")
     public ResponseEntity<String> applyToChallenge(@PathVariable int challengeId, @RequestParam int userId) {
@@ -70,11 +72,29 @@ public class ChallengeController {
             return ResponseEntity.status(400).body(response);
         }
     }
-//    http://localhost:8080/challenges/1/applicants/count
+
+
     // 참여 인원 수 조회
+
     @GetMapping("/{challengeId}/participants/count")
     public ResponseEntity<Integer> getParticipantsCount(@PathVariable int challengeId) {
         int count = applyChallengeService.getParticipantsCount(challengeId);
         return ResponseEntity.ok(count);
+    }
+
+    // 사용자가 참여한 챌린지 조회 (게시판 및 상태별)
+    //http://localhost:8080/challenges/user/1/board/3/status/RECRUITING
+    @GetMapping("/user/{boardId}")
+    public ResponseEntity<List<?>> getUserChallengesByBoardAndStatus(@PathVariable("boardId") Integer boardId, RequestEntity request) throws IOException {
+        String accessToken = request.getHeaders().get("Authorization").toString().split(" ")[1].split("]")[0];
+        String oauthId = authService.isTokenValid(accessToken);
+
+        try {
+            List<?> challenges = applyChallengeService.getChallengesForUserByBoard(oauthId, boardId);
+            return ResponseEntity.ok(challenges);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(null);
         }
+    }
 }
+
