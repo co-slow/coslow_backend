@@ -3,3 +3,5 @@ src/main/resources/application.yml
 .idea/misc.xml
 build
 .gradle
+build/resources/main/application.yml
+build/resources/main/application.yml
