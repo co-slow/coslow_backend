@@ -27,14 +27,14 @@ public class ApplyChallengeService {
     private MemberRepository memberRepository;
 
     // 챌린지 신청
-    public String applyToChallenge(int challengeId, int userId) {
+    public String applyToChallenge(int challengeId, String oauthId) {
         Optional<Challenge> challengeOptional = challengeRepository.findById(challengeId);
         if (challengeOptional.isEmpty()) {
             return "챌린지를 찾을 수 없습니다.";
         }
         Challenge challenge = challengeOptional.get();
 
-        Optional<Member> memberOptional = memberRepository.findById(userId);
+        Optional<Member> memberOptional = memberRepository.findByOauthId(oauthId);
         if (memberOptional.isEmpty()) {
             return "사용자를 찾을 수 없습니다.";
         }

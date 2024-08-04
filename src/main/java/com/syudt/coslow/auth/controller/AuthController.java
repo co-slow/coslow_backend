@@ -75,4 +75,13 @@ public class AuthController {
         String presignedUrl = s3Util.generatePresignedUrlForUpload("random-grid");
         return ResponseEntity.ok().body(presignedUrl);
     }
+
+    // 1. Get compressed image from frontend
+    // 2. change image format
+    // 3. send foodvisor api and get response
+    // 4. upload image to S3 bucket
+    @GetMapping("/img-collect")
+    public ResponseEntity imgProcessing() {
+        return ResponseEntity.status(200).body("image upload succeed");
+    }
 }

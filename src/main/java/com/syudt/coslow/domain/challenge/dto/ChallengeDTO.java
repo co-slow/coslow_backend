@@ -11,6 +11,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 public class ChallengeDTO {
+    private Integer id;
     private String title;
     private String description;
     private String startDate; // YYYY.MM.DD 형식
@@ -23,7 +24,8 @@ public class ChallengeDTO {
     private String daysRemaining; //D-n일
     private Challenge.ChallengeStatus status;
 
-    public ChallengeDTO(String title, String description, String startDate, String endDate, Challenge.ParticipateFrequency participateFrequency, Integer maxParticipants, Integer weeklyCheckInCount, Set<String> tags, String createdBy, String daysRemaining, Challenge.ChallengeStatus status) {
+    public ChallengeDTO(Integer id, String title, String description, String startDate, String endDate, Challenge.ParticipateFrequency participateFrequency, Integer maxParticipants, Integer weeklyCheckInCount, Set<String> tags, String createdBy, String daysRemaining, Challenge.ChallengeStatus status) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.startDate = startDate;
@@ -40,6 +42,7 @@ public class ChallengeDTO {
     public static ChallengeDTO fromEntity(Challenge challenge) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         ChallengeDTO dto = new ChallengeDTO();
+        dto.setId(challenge.getChallengeId());
         dto.setTitle(challenge.getTitle());
         dto.setDescription(challenge.getDescription());
         dto.setStartDate(challenge.getStartDate().format(formatter));

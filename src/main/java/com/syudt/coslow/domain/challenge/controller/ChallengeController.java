@@ -64,8 +64,11 @@ public class ChallengeController {
 
     // 챌린지 신청
     @PostMapping("/{challengeId}/apply")
-    public ResponseEntity<String> applyToChallenge(@PathVariable int challengeId, @RequestParam int userId) {
-        String response = applyChallengeService.applyToChallenge(challengeId, userId);
+    public ResponseEntity<String> applyToChallenge(@PathVariable int challengeId, RequestEntity request) throws IOException {
+        String accessToken = request.getHeaders().get("Authorization").toString().split(" ")[1].split("]")[0];
+        String oauthId = authService.isTokenValid(accessToken);
+
+        String response = applyChallengeService.applyToChallenge(challengeId, oauthId);
         if (response.startsWith("챌린지 신청이 성공적으로")) {
             return ResponseEntity.ok(response);
         } else {
