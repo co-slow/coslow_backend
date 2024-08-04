@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
 @Service
+@org.springframework.transaction.annotation.Transactional
 public class SaveChallengeService {
 
     @Autowired
@@ -39,4 +40,5 @@ public class SaveChallengeService {
 
         return saveChallengeRepository.save(saveChallenge);
     }
+
 }

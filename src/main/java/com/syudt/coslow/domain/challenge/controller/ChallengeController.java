@@ -2,9 +2,12 @@ package com.syudt.coslow.domain.challenge.controller;
 
 import com.syudt.coslow.auth.service.AuthService;
 import com.syudt.coslow.domain.challenge.dto.ChallengeDTO;
+import com.syudt.coslow.domain.challenge.dto.SaveChallengeDTO;
 import com.syudt.coslow.domain.challenge.entity.Challenge;
+import com.syudt.coslow.domain.challenge.entity.SaveChallenge;
 import com.syudt.coslow.domain.challenge.service.ApplyChallengeService;
 import com.syudt.coslow.domain.challenge.service.ChallengeService;
+import com.syudt.coslow.domain.challenge.service.SaveChallengeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +25,7 @@ public class ChallengeController {
     private final ApplyChallengeService applyChallengeService;
 
     private final ChallengeService challengeService;
-
+    private final SaveChallengeService saveChallengeService;
     // 새로운 챌린지 생성
     @PostMapping
     public ResponseEntity<Challenge> createChallenge(@RequestBody ChallengeDTO challengeDTO) {
@@ -40,7 +43,11 @@ public class ChallengeController {
         List<ChallengeDTO> challenges = challengeService.getAllChallenges();
         return ResponseEntity.ok(challenges);
     }
-
+    @PostMapping("/save")
+    public ResponseEntity<SaveChallenge> saveChallenge(@RequestBody SaveChallengeDTO saveChallengeDTO) {
+        SaveChallenge savedChallenge = saveChallengeService.saveChallenge(saveChallengeDTO);
+        return ResponseEntity.ok(savedChallenge);
+    }
     // 마감순 챌린지 목록 조회 (현재 날짜 기준 종료일이 가까운 순으로, 종료된 챌린지는 그 뒤에 정렬)
     @GetMapping("/ending-soon")
     public ResponseEntity<List<ChallengeDTO>> getChallengesEndingSoon() {
@@ -75,7 +82,6 @@ public class ChallengeController {
 
 
     // 참여 인원 수 조회
-
     @GetMapping("/{challengeId}/participants/count")
     public ResponseEntity<Integer> getParticipantsCount(@PathVariable int challengeId) {
         int count = applyChallengeService.getParticipantsCount(challengeId);

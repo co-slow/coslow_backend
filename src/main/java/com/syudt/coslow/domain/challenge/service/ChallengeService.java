@@ -7,6 +7,7 @@ import com.syudt.coslow.domain.member.entity.Member;
 import com.syudt.coslow.domain.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ChallengeService {
 
     @Autowired
@@ -115,5 +117,4 @@ public class ChallengeService {
                 .map(ChallengeDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-
 }

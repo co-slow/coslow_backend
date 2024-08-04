@@ -44,7 +44,7 @@ public class AuthController {
 
         return kakaoUserInfo;
     }
-    //grant_type=authorization_code&client_id=5815a4975b35540b74e2ebbd27ed6902&redirect_uri=http://localhost:5173/loginredirect&code=k8GLMIWt3DKU17PLGHViRK4Jt7xJT2IyV82YQnMiS7Hu2HE49VP3BgAAAAQKPXObAAABkQvFi1rUNEQ5evY1pg
+//grant_type=authorization_code&client_id=5815a4975b35540b74e2ebbd27ed6902&redirect_uri=http://localhost:5173/loginredirect&code=k8GLMIWt3DKU17PLGHViRK4Jt7xJT2IyV82YQnMiS7Hu2HE49VP3BgAAAAQKPXObAAABkQvFi1rUNEQ5evY1pg
 //    @GetMapping("/check-token")
 //    public String checkToken(@RequestHeader("Authorization") String authHeader) throws IOException {
 //        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
