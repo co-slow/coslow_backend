@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.syudt.coslow.auth.dto.KakaoUserInfo;
 import com.syudt.coslow.auth.service.AuthService;
 import com.syudt.coslow.domain.member.dto.MemberSave;
+import com.syudt.coslow.domain.member.entity.Member;
 import com.syudt.coslow.domain.member.entity.UserRole;
+import com.syudt.coslow.domain.member.repository.MemberRepository;
 import com.syudt.coslow.domain.member.service.MemberService;
 import com.syudt.coslow.global.util.S3Util;
 import lombok.NoArgsConstructor;
@@ -17,9 +19,12 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
+import java.util.Optional;
 
 
 @RestController
@@ -27,6 +32,7 @@ import java.io.IOException;
 public class AuthController {
     private final AuthService authService;
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final S3Util s3Util;
 
     @GetMapping("hello")
@@ -40,9 +46,15 @@ public class AuthController {
     public KakaoUserInfo kakaoAuth (@RequestParam("code") String code) throws JsonProcessingException {
         String token = authService.kakaoGetTokenViaCode(code);
         KakaoUserInfo kakaoUserInfo = authService.kakaoGetUserInfoViaToken(token);
-        memberService.saveMember(kakaoUserInfo);
-
-        return kakaoUserInfo;
+        Optional<Member> memberExisting = memberRepository.findByOauthId(kakaoUserInfo.getId());
+        if (memberExisting.isPresent()) {
+            kakaoUserInfo.setUserId(memberExisting.get().getUserId().toString());
+            return kakaoUserInfo;
+        } else {
+            String userId = memberService.saveMember(kakaoUserInfo).toString();
+            kakaoUserInfo.setUserId(userId);
+            return kakaoUserInfo;
+        }
     }
     //grant_type=authorization_code&client_id=5815a4975b35540b74e2ebbd27ed6902&redirect_uri=http://localhost:5173/loginredirect&code=k8GLMIWt3DKU17PLGHViRK4Jt7xJT2IyV82YQnMiS7Hu2HE49VP3BgAAAAQKPXObAAABkQvFi1rUNEQ5evY1pg
 //    @GetMapping("/check-token")
@@ -81,7 +93,14 @@ public class AuthController {
     // 3. send foodvisor api and get response
     // 4. upload image to S3 bucket
     @GetMapping("/img-collect")
-    public ResponseEntity imgProcessing() {
+    public ResponseEntity imgProcessing(@RequestParam("image") MultipartFile file) {;
+//        authService.imageReformatting(file);
+
+        System.out.println(file);
+        System.out.println(file.getOriginalFilename());
+        System.out.println(file.getResource());
+        System.out.println(file.getSize());
+        System.out.println(file.getName());
         return ResponseEntity.status(200).body("image upload succeed");
     }
 }

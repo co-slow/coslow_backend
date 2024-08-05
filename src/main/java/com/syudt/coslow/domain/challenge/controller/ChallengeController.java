@@ -25,7 +25,11 @@ public class ChallengeController {
 
     // 새로운 챌린지 생성
     @PostMapping
-    public ResponseEntity<Challenge> createChallenge(@RequestBody ChallengeDTO challengeDTO) {
+    public ResponseEntity<Challenge> createChallenge(@RequestBody ChallengeDTO challengeDTO, RequestEntity request) throws IOException {
+        String accessToken = request.getHeaders().get("Authorization").toString().split(" ")[1].split("]")[0];
+        String oauthId = authService.isTokenValid(accessToken);
+
+
         try {
             Challenge createdChallenge = challengeService.createChallenge(challengeDTO);
             return ResponseEntity.ok(createdChallenge);
@@ -76,9 +80,7 @@ public class ChallengeController {
         }
     }
 
-
     // 참여 인원 수 조회
-
     @GetMapping("/{challengeId}/participants/count")
     public ResponseEntity<Integer> getParticipantsCount(@PathVariable int challengeId) {
         int count = applyChallengeService.getParticipantsCount(challengeId);

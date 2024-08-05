@@ -12,12 +12,14 @@ public class KakaoUserInfo {
     private String profileImg;
     private String nickname;
     private String accessToken;
+    private String userId;
 
 
-    public KakaoUserInfo(String id, String profileImg, String nickname, String accessToken) {
+    public KakaoUserInfo(String id, String profileImg, String nickname, String accessToken, String userId) {
         this.id = id;
         this.profileImg = profileImg;
         this.nickname = nickname;
         this.accessToken = accessToken;
+        this.userId = userId;
     }
 }

@@ -9,12 +9,14 @@ import com.syudt.coslow.domain.member.entity.Member;
 import com.syudt.coslow.domain.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
+@Transactional
 public class ApplyChallengeService {
 
     @Autowired
@@ -28,17 +30,9 @@ public class ApplyChallengeService {
 
     // 챌린지 신청
     public String applyToChallenge(int challengeId, String oauthId) {
-        Optional<Challenge> challengeOptional = challengeRepository.findById(challengeId);
-        if (challengeOptional.isEmpty()) {
-            return "챌린지를 찾을 수 없습니다.";
-        }
-        Challenge challenge = challengeOptional.get();
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow();
 
-        Optional<Member> memberOptional = memberRepository.findByOauthId(oauthId);
-        if (memberOptional.isEmpty()) {
-            return "사용자를 찾을 수 없습니다.";
-        }
-        Member member = memberOptional.get();
+        Member member = memberRepository.findByOauthId(oauthId).orElseThrow();
 
         if (challenge.getStatus() == Challenge.ChallengeStatus.COMPLETED) {
             return "이미 종료된 챌린지입니다.";

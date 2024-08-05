@@ -3,6 +3,7 @@ package com.syudt.coslow.auth.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.tools.jconsole.JConsoleContext;
 import com.syudt.coslow.auth.dto.KakaoUserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -14,7 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 @Service
@@ -71,7 +78,7 @@ public class AuthService {
         String nickname = jsonNode.get("properties")
                 .get("nickname").asText();
 
-        return new KakaoUserInfo(id, profileImg, nickname, token);
+        return new KakaoUserInfo(id, profileImg, nickname, token, "0");
     }
     public String isTokenValid(String token) throws IOException {
         String url = "https://kapi.kakao.com/v1/user/access_token_info";
@@ -123,4 +130,18 @@ public class AuthService {
             return false;
         }
     }
+
+    public static byte[] convertHEICToPNG(byte[] heicBytes) throws IOException {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(heicBytes);
+        BufferedImage image = ImageIO.read(inputStream);
+
+        if (image == null) {
+            throw new IOException("Could not read image from input bytes.");
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", outputStream);
+        return outputStream.toByteArray();
+    }
+
 }

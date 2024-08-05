@@ -5,3 +5,4 @@ build
 .gradle
 build/resources/main/application.yml
 build/resources/main/application.yml
+build/resources/main/application.yml
