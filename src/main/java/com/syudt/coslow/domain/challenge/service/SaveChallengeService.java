@@ -13,7 +13,11 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
 @Service
+<<<<<<< HEAD
 @Transactional
+=======
+@org.springframework.transaction.annotation.Transactional
+>>>>>>> 8f25c1699b85d15d1cd9cc0ce95ad0405cc20cc0
 public class SaveChallengeService {
 
     @Autowired
@@ -40,4 +44,5 @@ public class SaveChallengeService {
 
         return saveChallengeRepository.save(saveChallenge);
     }
+
 }

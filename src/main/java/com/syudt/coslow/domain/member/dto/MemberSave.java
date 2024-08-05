@@ -13,4 +13,8 @@ public class MemberSave {
     String profileImg;
     String nickname;
     UserRole userRole;
+    String grade;
+    int charPoint;
+    int challengeCount;
+    String charLevel;
 }
