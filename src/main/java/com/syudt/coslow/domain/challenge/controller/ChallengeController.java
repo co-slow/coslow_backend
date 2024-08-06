@@ -1,20 +1,32 @@
 package com.syudt.coslow.domain.challenge.controller;
 
+import com.amazonaws.Request;
 import com.syudt.coslow.auth.service.AuthService;
 import com.syudt.coslow.domain.challenge.dto.ChallengeDTO;
 import com.syudt.coslow.domain.challenge.dto.SaveChallengeDTO;
+import com.syudt.coslow.domain.challenge.entity.ApplyChallenge;
 import com.syudt.coslow.domain.challenge.entity.Challenge;
 import com.syudt.coslow.domain.challenge.entity.SaveChallenge;
+import com.syudt.coslow.domain.challenge.repository.ApplyChallengeRepository;
+import com.syudt.coslow.domain.challenge.repository.ChallengeRepository;
+import com.syudt.coslow.domain.challenge.repository.SaveChallengeRepository;
 import com.syudt.coslow.domain.challenge.service.ApplyChallengeService;
 import com.syudt.coslow.domain.challenge.service.ChallengeService;
 import com.syudt.coslow.domain.challenge.service.SaveChallengeService;
+import com.syudt.coslow.domain.diet.repository.DietRepository;
+import com.syudt.coslow.domain.member.entity.Member;
+import com.syudt.coslow.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/challenges")
@@ -25,7 +37,12 @@ public class ChallengeController {
     private final ApplyChallengeService applyChallengeService;
 
     private final ChallengeService challengeService;
+    private final ChallengeRepository challengeRepository;
     private final SaveChallengeService saveChallengeService;
+    private final MemberRepository memberRepository;
+    private final SaveChallengeRepository saveChallengeRepository;
+//    private final DietRepository dietRepository;
+    private final ApplyChallengeRepository applyChallengeRepository;
     // 새로운 챌린지 생성
     @PostMapping
     public ResponseEntity<Challenge> createChallenge(@RequestBody ChallengeDTO challengeDTO, RequestEntity request) throws IOException {
@@ -52,6 +69,18 @@ public class ChallengeController {
         SaveChallenge savedChallenge = saveChallengeService.saveChallenge(saveChallengeDTO);
         return ResponseEntity.ok(savedChallenge);
     }
+
+    @GetMapping("/saved")
+    public ResponseEntity<List<SaveChallenge>> getSavedChallengeViaToken(RequestEntity request) throws IOException {
+        String accessToken = request.getHeaders().get("Authorization").toString().split(" ")[1].split("]")[0];
+        String oauthId = authService.isTokenValid(accessToken);
+
+        Member member = memberRepository.findByOauthId(oauthId).orElseThrow();
+        List<SaveChallenge> saveChallenges = saveChallengeRepository.findByMember(member);
+
+        return ResponseEntity.ok().body(saveChallenges);
+    }
+
     // 마감순 챌린지 목록 조회 (현재 날짜 기준 종료일이 가까운 순으로, 종료된 챌린지는 그 뒤에 정렬)
     @GetMapping("/ending-soon")
     public ResponseEntity<List<ChallengeDTO>> getChallengesEndingSoon() {
@@ -107,6 +136,40 @@ public class ChallengeController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).body(null);
         }
+    }
+
+    @GetMapping("/{challengeId}/detail")
+    public ResponseEntity<MultiValueMap<Object, Object>> getChallengeDetail(@PathVariable("challengeId") Integer challengeId) {
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow();
+        MultiValueMap<Object, Object> body = new LinkedMultiValueMap<>();
+        body.add("id", challenge.getChallengeId());
+        body.add("title", challenge.getTitle());
+        body.add("startDate", challenge.getStartDate());
+        body.add("endDate", challenge.getEndDate());
+
+        List<ApplyChallenge> applyList = applyChallengeRepository.findByChallenge(challenge);
+        System.out.println(applyList);
+
+        return ResponseEntity.ok().body(body);
+
+    }
+
+    @GetMapping("/{challengeId}/dday")
+    public String getChallengeDday(@PathVariable("challengeId") Integer challengeId) {
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow();
+
+        String daysRemaining = "0";
+        LocalDateTime now = LocalDateTime.now();
+        long daysBetween = java.time.Duration.between(now, challenge.getEndDate()).toDays();
+        daysBetween += 1;
+        if (daysBetween > 0) {
+            daysRemaining = "D-" + daysBetween;
+        } else if (daysBetween == 0) {
+            daysRemaining = "D-DAY";
+        } else {
+            daysRemaining = "종료";
+        }
+        return daysRemaining;
     }
 }
 

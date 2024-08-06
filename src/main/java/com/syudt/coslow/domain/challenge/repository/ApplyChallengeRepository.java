@@ -12,4 +12,5 @@ public interface ApplyChallengeRepository extends JpaRepository<ApplyChallenge, 
     boolean existsByChallengeAndMember(Challenge challenge, Member member);
     long countByChallenge(Challenge challenge);
     List<ApplyChallenge> findByMember(Member member);
+    List<ApplyChallenge> findByChallenge(Challenge challenge);
 }

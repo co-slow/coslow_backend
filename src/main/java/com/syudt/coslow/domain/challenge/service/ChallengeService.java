@@ -8,6 +8,7 @@ import com.syudt.coslow.domain.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -116,5 +117,20 @@ public class ChallengeService {
         return challenges.stream()
                 .map(ChallengeDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    public String getDday(LocalDateTime endDate){
+        String daysRemaining = "0";
+        LocalDateTime now = LocalDateTime.now();
+        long daysBetween = java.time.Duration.between(now, endDate).toDays();
+        daysBetween += 1;
+        if (daysBetween > 0) {
+            daysRemaining = "D-" + daysBetween;
+        } else if (daysBetween == 0) {
+            daysRemaining = "D-DAY";
+        } else {
+            daysRemaining = "종료";
+        }
+        return daysRemaining;
     }
 }
